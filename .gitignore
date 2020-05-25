@@ -1,9 +1,12 @@
-###> symfony/framework-bundle ###
 .idea/
+.phpunit.result.cache
+/.env.*.local
 /.env.local
 /.env.local.php
-/.env.*.local
+/.php_cs
+/.php_cs.cache
+/config/jwt/*.pem
+/phpunit.xml
 /public/bundles/
 /var/
 /vendor/
-###< symfony/framework-bundle ###

@@ -2,6 +2,7 @@ FROM php:7.4.6-fpm-alpine
 
 RUN apk add --no-cache \
         bash \
+        make \
         unzip
 
 RUN set -eux; \

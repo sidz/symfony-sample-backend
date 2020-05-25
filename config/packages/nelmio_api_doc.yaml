@@ -1,0 +1,48 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Demo App
+            version: 1.0.0
+
+        securityDefinitions:
+            Bearer:
+                type: apiKey
+                description: 'Value: Bearer {jwt}'
+                name: Authorization
+                in: header
+
+            security:
+                - Bearer: []
+
+        paths:
+            /api/login_check:
+                post:
+                    tags:
+                        - Security
+                    description: Login into the api.
+                    produces:
+                        - application/json
+                    parameters:
+                        -   name: user
+                            description: User to login
+                            in: body
+                            required: true
+                            schema:
+                                type: object
+                                properties:
+                                    username:
+                                        type: string
+                                    password:
+                                        type: string
+                    responses:
+                        '200':
+                            description: Login successful
+                            schema:
+                                type: object
+                                properties:
+                                    token:
+                                        type: string
+
+    areas:
+        path_patterns:
+            - ^/api(?!/doc$)
