@@ -52,7 +52,7 @@ final class TaskController extends AbstractController
             ->getRepository(Task::class)
             ->findByUserForToday($this->getUser(), new DateTimeImmutable('today'));
 
-        return $this->json(
+        return JsonResponse::fromJsonString(
             $this->serializer->serialize($taskListForToday, 'json'),
             JsonResponse::HTTP_OK
         );
@@ -99,7 +99,7 @@ final class TaskController extends AbstractController
         $this->em->persist($task);
         $this->em->flush();
 
-        return $this->json(
+        return JsonResponse::fromJsonString(
             $this->serializer->serialize($task, 'json'),
             JsonResponse::HTTP_CREATED
         );
@@ -150,14 +150,14 @@ final class TaskController extends AbstractController
             ->findByUserAndUUid($this->getUser(), $uuid);
 
         if (null === $task) {
-            return $this->json(null, JsonResponse::HTTP_NOT_FOUND);
+            return JsonResponse::fromJsonString(null, JsonResponse::HTTP_NOT_FOUND);
         }
 
         $task->updateWith($taskRequest);
 
         $this->em->flush();
 
-        return $this->json(
+        return JsonResponse::fromJsonString(
             $this->serializer->serialize($task, 'json'),
             JsonResponse::HTTP_OK
         );
@@ -182,6 +182,6 @@ final class TaskController extends AbstractController
             $this->em->flush();
         }
 
-        return $this->json(null, JsonResponse::HTTP_NO_CONTENT);
+        return JsonResponse::fromJsonString(null, JsonResponse::HTTP_NO_CONTENT);
     }
 }

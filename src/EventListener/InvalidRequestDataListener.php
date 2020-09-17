@@ -33,7 +33,7 @@ final class InvalidRequestDataListener
         ];
 
         $event->setResponse(
-            JsonResponse::create(
+            JsonResponse::fromJsonString(
                 $this->serializer->serialize($response, 'json'),
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY
             )
