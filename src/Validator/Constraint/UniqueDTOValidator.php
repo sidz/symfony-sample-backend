@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Validator\Constraint;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -64,7 +64,7 @@ class UniqueDTOValidator extends ConstraintValidator
             }
         }
 
-        /* @var $class \Doctrine\Common\Persistence\Mapping\ClassMetadata */
+        /* @var $class ClassMetadata */
         $class = $em->getClassMetadata($constraint->entityClass);
 
         $reflectionClass = new \ReflectionClass(\get_class($dto));

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
          colors="true"
          executionOrder="random"
          bootstrap="tests/bootstrap.php"
@@ -10,6 +9,15 @@
          failOnRisky="true"
          verbose="true"
 >
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <exclude>
+            <file>./src/Kernel.php</file>
+        </exclude>
+    </coverage>
+
     <php>
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
@@ -28,13 +36,4 @@
             <directory>tests/Functional</directory>
         </testsuite>
     </testsuites>
-
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-            <exclude>
-                <file>./src/Kernel.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
 </phpunit>

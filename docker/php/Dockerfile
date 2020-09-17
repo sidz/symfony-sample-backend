@@ -1,4 +1,4 @@
-FROM php:7.4.6-fpm-alpine
+FROM php:7.4.10-fpm-alpine
 
 RUN apk add --no-cache \
         bash \
@@ -26,7 +26,7 @@ RUN set -eux; \
     apk add --no-cache --virtual .phpexts-rundeps $runDeps; \
     apk del .build-deps
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY docker/php/php.ini $PHP_INI_DIR
 
