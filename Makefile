@@ -5,7 +5,7 @@ MAKEFLAGS += --no-builtin-rules
 .DEFAULT_GOAL := help
 .PHONY: help
 help:
-	@echo "\033[33mUsage:\033[0m\n  make TARGET\n\n\033[33mAvailable commands:\033[0m"
+	@printf "\033[33mUsage:\033[0m\n  make TARGET\n\033[33m\nAvailable Commands:\n\033[0m"
 	@grep -E '^[a-zA-Z-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  [32m%-27s[0m %s\n", $$1, $$2}'
 
 #
@@ -37,3 +37,24 @@ cs-check: $(PHP_CS_FIXER) ## Runs PHP-CS-Fixer in dry run mode
 cs-fix: $(PHP_CS_FIXER) ## Runs PHP-CS-Fixer
 	$(PHP_CS_FIXER) fix --config=.php_cs.dist --diff --ansi --diff-format=udiff
 	LC_ALL=C sort -u .gitignore -o .gitignore
+
+start: ## Start application in development mode and build containers if required
+ifeq ($(INSIDE_DOCKER), 1)
+	$(WARNING_HOST)
+else
+	docker-compose --env-file=.env.local up -d --build
+endif
+
+stop: ## Stop application containers
+ifeq ($(INSIDE_DOCKER), 1)
+	$(WARNING_HOST)
+else
+	docker-compose down -v --remove-orphans
+endif
+
+bash: ## Get bash inside PHP container
+ifeq ($(INSIDE_DOCKER), 1)
+	$(WARNING_HOST)
+else
+	docker-compose exec php bash
+endif

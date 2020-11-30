@@ -17,6 +17,7 @@ security:
             pattern: ^/api/register
             stateless: true
             anonymous: true
+            lazy: true
 
         login:
             pattern:  ^/api/login

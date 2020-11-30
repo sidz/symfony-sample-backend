@@ -14,9 +14,10 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
     composer install --prefer-dist --no-progress --no-suggest --no-interaction
 
     bin/console doctrine:database:create
-    bin/console doctrine:schema:update --force
 
     chown www-data:www-data ./var/app.db
+
+    bin/console doctrine:schema:update --force
   fi
 fi
 

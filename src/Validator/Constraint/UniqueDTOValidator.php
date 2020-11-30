@@ -4,14 +4,24 @@ declare(strict_types=1);
 
 namespace App\Validator\Constraint;
 
+use function count;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
+use function get_class;
+use InvalidArgumentException;
+use function is_array;
+use function is_object;
+use function is_string;
+use Iterator;
+use IteratorAggregate;
+use ReflectionClass;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class UniqueDTOValidator extends ConstraintValidator
 {
@@ -28,21 +38,21 @@ class UniqueDTOValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, UniqueDTO::class);
         }
 
-        if (!\is_array($constraint->fields) && !\is_string($constraint->fields)) {
+        if (!is_array($constraint->fields) && !is_string($constraint->fields)) {
             throw new UnexpectedTypeException($constraint->fields, 'array');
         }
 
-        if (null !== $constraint->errorPath && !\is_string($constraint->errorPath)) {
+        if (null !== $constraint->errorPath && !is_string($constraint->errorPath)) {
             throw new UnexpectedTypeException($constraint->errorPath, 'string or null');
         }
 
         if (null === $constraint->entityClass) {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
 
         $fields = (array) $constraint->fields;
 
-        if (0 === \count($fields)) {
+        if (0 === count($fields)) {
             throw new ConstraintDefinitionException('At least one field has to be specified.');
         }
 
@@ -67,7 +77,7 @@ class UniqueDTOValidator extends ConstraintValidator
         /* @var $class ClassMetadata */
         $class = $em->getClassMetadata($constraint->entityClass);
 
-        $reflectionClass = new \ReflectionClass(\get_class($dto));
+        $reflectionClass = new ReflectionClass(get_class($dto));
 
         $dtoReflFields = [];
 
@@ -138,7 +148,7 @@ class UniqueDTOValidator extends ConstraintValidator
 
         $result = $repository->{$constraint->repositoryMethod}($criteria);
 
-        if ($result instanceof \IteratorAggregate) {
+        if ($result instanceof IteratorAggregate) {
             $result = $result->getIterator();
         }
 
@@ -146,9 +156,9 @@ class UniqueDTOValidator extends ConstraintValidator
          * element. Rewinding should have no ill effect if $result is another
          * iterator implementation.
          */
-        if ($result instanceof \Iterator) {
+        if ($result instanceof Iterator) {
             $result->rewind();
-        } elseif (\is_array($result)) {
+        } elseif (is_array($result)) {
             reset($result);
         }
 
@@ -156,7 +166,7 @@ class UniqueDTOValidator extends ConstraintValidator
          * which is the same as the entity being validated, the criteria is
          * unique.
          */
-        if (0 === \count($result) || (1 === \count($result) && $dto === ($result instanceof \Iterator ? $result->current() : current($result)))) {
+        if (0 === count($result) || (1 === count($result) && $dto === ($result instanceof Iterator ? $result->current() : current($result)))) {
             return;
         }
 
@@ -174,11 +184,11 @@ class UniqueDTOValidator extends ConstraintValidator
 
     private function formatWithIdentifiers(ObjectManager $em, ClassMetadata $class, $value): string
     {
-        if (!\is_object($value) || $value instanceof \DateTimeInterface) {
+        if (!is_object($value) || $value instanceof DateTimeInterface) {
             return $this->formatValue($value, self::PRETTY_DATE);
         }
 
-        if ($class->getName() !== $idClass = \get_class($value)) {
+        if ($class->getName() !== $idClass = get_class($value)) {
             // non unique value might be a composite PK that consists of other entity objects
             if ($em->getMetadataFactory()->hasMetadataFor($idClass)) {
                 $identifiers = $em->getClassMetadata($idClass)->getIdentifierValues($value);
@@ -196,10 +206,10 @@ class UniqueDTOValidator extends ConstraintValidator
         }
 
         array_walk($identifiers, function (&$id, $field) {
-            if (!\is_object($id) || $id instanceof \DateTimeInterface) {
+            if (!is_object($id) || $id instanceof DateTimeInterface) {
                 $idAsString = $this->formatValue($id, self::PRETTY_DATE);
             } else {
-                $idAsString = sprintf('object("%s")', \get_class($id));
+                $idAsString = sprintf('object("%s")', get_class($id));
             }
 
             $id = sprintf('%s => %s', $field, $idAsString);
