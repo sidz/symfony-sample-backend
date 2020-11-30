@@ -34,9 +34,7 @@ final class TaskControllerTest extends WebTestCase
             ]
         );
 
-        $content = json_decode($client->getResponse()->getContent(), true);
-
-        $data = $this->serializer->deserialize($content, 'array', 'json');
+        $data = $this->serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
 
         self::assertSame(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
 
@@ -60,9 +58,7 @@ final class TaskControllerTest extends WebTestCase
             ]
         );
 
-        $content = json_decode($client->getResponse()->getContent(), true);
-
-        $createdData = $this->serializer->deserialize($content, 'array', 'json');
+        $createdData = $this->serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
 
         $client->request(
             Request::METHOD_PUT,
@@ -74,9 +70,7 @@ final class TaskControllerTest extends WebTestCase
             ]
         );
 
-        $content = json_decode($client->getResponse()->getContent(), true);
-
-        $data = $this->serializer->deserialize($content, 'array', 'json');
+        $data = $this->serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
 
         self::assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
@@ -100,9 +94,7 @@ final class TaskControllerTest extends WebTestCase
             ]
         );
 
-        $content = json_decode($client->getResponse()->getContent(), true);
-
-        $createdData = $this->serializer->deserialize($content, 'array', 'json');
+        $createdData = $this->serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
 
         $client->request(
             Request::METHOD_DELETE,
@@ -126,9 +118,7 @@ final class TaskControllerTest extends WebTestCase
             ]
         );
 
-        $content = json_decode($client->getResponse()->getContent(), true);
-
-        $createdData = $this->serializer->deserialize($content, 'array', 'json');
+        $createdData = $this->serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
 
         $client->request(
             Request::METHOD_DELETE,
@@ -149,13 +139,15 @@ final class TaskControllerTest extends WebTestCase
     {
         $client = $this->createAuthenticatedClient();
 
+        $currentDateTimeAsString = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+
         $client->request(
             Request::METHOD_POST,
             '/api/tasks/',
             [
                 'title' => 'test title 0',
                 'description' => 'test description 0',
-                'target_date' => '2020-05-26 12:00:00',
+                'target_date' => $currentDateTimeAsString,
             ]
         );
 
@@ -165,15 +157,13 @@ final class TaskControllerTest extends WebTestCase
             [
                 'title' => 'test title 1',
                 'description' => 'test description 1',
-                'target_date' => '2020-05-26 12:00:00',
+                'target_date' => $currentDateTimeAsString,
             ]
         );
 
         $client->request(Request::METHOD_GET, '/api/tasks/');
 
-        $content = json_decode($client->getResponse()->getContent(), true);
-
-        $data = $this->serializer->deserialize($content, 'array', 'json');
+        $data = $this->serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
 
         self::assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         self::assertCount(2, $data);
@@ -181,7 +171,7 @@ final class TaskControllerTest extends WebTestCase
         foreach ($data as $i => $task) {
             self::assertSame("test title {$i}", $task['title']);
             self::assertSame("test description {$i}", $task['description']);
-            self::assertSame('2020-05-26 12:00:00', $task['target_date']);
+            self::assertSame($currentDateTimeAsString, $task['target_date']);
             self::assertArrayHasKey('uuid', $task);
         }
     }

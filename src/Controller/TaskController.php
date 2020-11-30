@@ -150,7 +150,7 @@ final class TaskController extends AbstractController
             ->findByUserAndUUid($this->getUser(), $uuid);
 
         if (null === $task) {
-            return JsonResponse::fromJsonString(null, JsonResponse::HTTP_NOT_FOUND);
+            return new JsonResponse('', JsonResponse::HTTP_NO_CONTENT, [], true);
         }
 
         $task->updateWith($taskRequest);
@@ -182,6 +182,6 @@ final class TaskController extends AbstractController
             $this->em->flush();
         }
 
-        return JsonResponse::fromJsonString(null, JsonResponse::HTTP_NO_CONTENT);
+        return new JsonResponse('', JsonResponse::HTTP_NO_CONTENT, [], true);
     }
 }
